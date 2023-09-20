@@ -1,0 +1,6 @@
+git push --set-upstream origin ветка имя
+git pull/п. и о.
+git fetch/п.
+git branch/п. в.
+git checkout -b/ с. и п.
+git checkout/ с.
