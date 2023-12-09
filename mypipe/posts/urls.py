@@ -7,4 +7,7 @@ app_name = 'posts'
 urlpatterns = [
     path('', views.index, name='index'),
     path('group/<slug:slug>/', views.group_posts, name='group_list'),
+    path('create/', views.post_create, name='post_create'),
+    path('profile/<str:username>/', views.profile, name='profile'),
+    path('post_detail/<int:post_id>/', views.post_detail, name='post_detail'),
 ]
