@@ -16,6 +16,7 @@ class Group(models.Model):
 class Post(models.Model):
     text = models.TextField()
     pub_date = models.DateTimeField(auto_now_add=True)
+    image = models.ImageField(blank=True, upload_to='posts/')
     author = models.ForeignKey(
         User,
         on_delete=models.CASCADE,
@@ -33,3 +34,38 @@ class Post(models.Model):
 
     class Meta:
         ordering = ('-pub_date',)
+
+class Comment(models.Model):
+    text = models.CharField(max_length=300)
+    pub_date = models.DateTimeField(auto_now_add=True)
+    author = models.ForeignKey(
+        User,
+        on_delete=models.CASCADE,
+        related_name='comments'
+        )
+    post = models.ForeignKey(
+        Post,
+        on_delete=models.CASCADE,
+        related_name='comments'
+    )
+    
+    def __str__(self):
+        return self.text[:25]
+    
+    class Meta:
+        ordering = ('-pub_date',)
+
+class Subscription(models.Model):
+    subscriber = models.ForeignKey(
+        User,
+        on_delete=models.CASCADE,
+        related_name='subscriber'
+    )
+    author = models.ForeignKey(
+        User,
+        on_delete=models.CASCADE,
+        related_name='following'
+    )
+
+    class Meta:
+        constraints = (models.UniqueConstraint(fields=['subscriber', 'following'], name='unique_subscribe'),)
