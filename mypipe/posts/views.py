@@ -2,6 +2,7 @@ from django.shortcuts import get_object_or_404, render, redirect
 from django.contrib.auth import get_user_model
 from django.contrib.auth.decorators import login_required
 from django.core.paginator import Paginator
+from django.views.decorators.cache import cache_page
 
 from .models import Group, Post, Subscription
 from .forms import PostForm, CommentForm
@@ -16,6 +17,7 @@ def pagination(request, group):
     page_obj = paginator.get_page(page_number)
     return page_obj
 
+@cache_page(20, key_prefix='index_cache')
 def index(request):
     template = 'posts/index.html'
     title = 'Это главная страница проекта Mypipe'
@@ -34,11 +36,15 @@ def profile(request, username):
     author = get_object_or_404(User, username=username)
     posts = author.posts.select_related('author', 'group')
     page_obj = pagination(request, posts)
+    following = request.user.is_authenticated and author.following.filter(
+        user=request.user, author=author).exists() and request.user.subscriber.filter(
+            user=request.user, author=author).exists()
     context = {
         'title': title,
         'posts': posts,
         'author': author,
-        'page_obj': page_obj
+        'page_obj': page_obj,
+        'following': following,
     }
     return render(request, template, context)
 
@@ -115,22 +121,22 @@ def post_edit(request, post_id):
 @login_required
 def subscribe(request, username):
     subscriber = request.user
-    author = get_object_or_404(User, username=username)
-    if subscriber != author:
-        Subscription.objects.get_or_create(subscriber=subscriber,  author=author)
+    following = get_object_or_404(User, username=username)
+    if subscriber != following:
+        Subscription.objects.get_or_create(user=subscriber,  author=following)
     return redirect('posts:profile', username=username)
 
 @login_required
 def unsubscribe(request, username):
     subscriber = request.user
-    author = get_object_or_404(User, username=username)
-    Subscription.objects.filter(subscriber=subscriber, author=author).delete()
+    following = get_object_or_404(User, username=username)
+    Subscription.objects.filter(user=subscriber, author=following).delete()
     return redirect('posts:profile', username=username)
 
 @login_required
 def subscribe_index(request):
     title = 'Избраное'
-    posts = Post.objects.filter(author__subscriber__user=request.user)
+    posts = Post.objects.filter(author__following__user=request.user)
     page_obj = pagination(request, posts)
     context = {
         'posts': posts,
