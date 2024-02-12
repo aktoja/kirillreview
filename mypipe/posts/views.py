@@ -40,7 +40,8 @@ def profile(request, username):
     posts = author.posts.select_related('author', 'group')
     page_obj = pagination(request, posts)
     following = request.user.is_authenticated and author.following.filter(
-        user=request.user, author=author).exists() and request.user.subscriber.filter(
+        user=request.user,
+        author=author).exists() and request.user.subscriber.filter(
             user=request.user, author=author).exists()
     context = {
         'title': title,
@@ -111,7 +112,8 @@ def post_edit(request, post_id):
     post = get_object_or_404(Post, pk=post_id)
     if request.user != post.author:
         redirect('post:post_detail', post_id=post_id)
-    form = PostForm(request.POST or None, files=request.FILES or None, instance=post)
+    form = PostForm(request.POST or None,
+                    files=request.FILES or None, instance=post)
     if form.is_valid():
         form.save()
         return redirect('posts:post_detail', post_id=post_id)
@@ -151,4 +153,3 @@ def subscribe_index(request):
         'title': title
     }
     return render(request, 'posts/subscribe.html', context)
-

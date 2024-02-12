@@ -19,8 +19,10 @@ class Group(models.Model):
 
 class Post(models.Model):
     text = models.TextField(verbose_name="Текст")
-    pub_date = models.DateTimeField(auto_now_add=True, verbose_name="Дата публикации")
-    image = models.ImageField(blank=True, upload_to='posts/', verbose_name="Картинка")
+    pub_date = models.DateTimeField(auto_now_add=True,
+                                    verbose_name="Дата публикации")
+    image = models.ImageField(blank=True, upload_to='posts/',
+                              verbose_name="Картинка")
     author = models.ForeignKey(
         User,
         on_delete=models.CASCADE,
@@ -45,8 +47,10 @@ class Post(models.Model):
 
 
 class Comment(models.Model):
-    text = models.CharField(max_length=300, verbose_name="Текст")
-    pub_date = models.DateTimeField(auto_now_add=True, verbose_name="Дата публикации")
+    text = models.CharField(max_length=300,
+                            verbose_name="Текст")
+    pub_date = models.DateTimeField(auto_now_add=True,
+                                    verbose_name="Дата публикации")
     author = models.ForeignKey(
         User,
         on_delete=models.CASCADE,
@@ -84,6 +88,7 @@ class Subscription(models.Model):
     )
 
     class Meta:
-        constraints = (models.UniqueConstraint(fields=['user', 'author'], name='unique_subscribe'),)
+        constraints = (models.UniqueConstraint(fields=['user', 'author'],
+                                               name='unique_subscribe'),)
         verbose_name = 'Подписка'
         verbose_name_plural = 'Подписки'

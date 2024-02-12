@@ -11,4 +11,5 @@ def page_not_found(request, exeption):
     context = {
         'path': request.path
     }
-    return render(request, 'core/404.html', context, status=HTTPStatus.NOT_FOUND)
+    return render(request, 'core/404.html', context,
+                  status=HTTPStatus.NOT_FOUND)
