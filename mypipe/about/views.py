@@ -1,5 +1,6 @@
 from django.shortcuts import render
 
+
 def me(request):
     template = 'about/me.html'
     title = 'Об авторе'
@@ -7,6 +8,7 @@ def me(request):
         'title': title
     }
     return render(request, template, context)
+
 
 def tech(request):
     template = 'about/tech.html'

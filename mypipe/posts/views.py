@@ -1,21 +1,23 @@
-from django.shortcuts import get_object_or_404, render, redirect
 from django.contrib.auth import get_user_model
 from django.contrib.auth.decorators import login_required
 from django.core.paginator import Paginator
+from django.shortcuts import get_object_or_404, redirect, render
 from django.views.decorators.cache import cache_page
 
+from .forms import CommentForm, PostForm
 from .models import Group, Post, Subscription
-from .forms import PostForm, CommentForm
 
 POST_SHOW = 10
 
 User = get_user_model()
+
 
 def pagination(request, group):
     paginator = Paginator(group, POST_SHOW)
     page_number = request.GET.get('page')
     page_obj = paginator.get_page(page_number)
     return page_obj
+
 
 @cache_page(20, key_prefix='index_cache')
 def index(request):
@@ -29,6 +31,7 @@ def index(request):
         'page_obj': page_obj
     }
     return render(request, template, context)
+
 
 def profile(request, username):
     template = 'posts/profile.html'
@@ -61,6 +64,7 @@ def group_posts(request, slug):
     }
     return render(request, template, context)
 
+
 def post_detail(request, post_id):
     template = 'posts/post_detail.html'
     title = 'подробная информация'
@@ -72,8 +76,9 @@ def post_detail(request, post_id):
         'post': post,
         'form': form,
         'comments': comments,
-        }
+    }
     return render(request, template, context)
+
 
 @login_required
 def add_comment(request, post_id):
@@ -85,7 +90,6 @@ def add_comment(request, post_id):
         new_comment.post = post
         new_comment.save()
     return redirect('posts:post_detail', post_id=post_id)
-
 
 
 @login_required
@@ -114,17 +118,19 @@ def post_edit(request, post_id):
     context = {
         'post': post,
         'form': form,
-        'is_edit': True, 
+        'is_edit': True,
     }
     return render(request, 'posts/create_post.html', context)
+
 
 @login_required
 def subscribe(request, username):
     subscriber = request.user
     following = get_object_or_404(User, username=username)
     if subscriber != following:
-        Subscription.objects.get_or_create(user=subscriber,  author=following)
+        Subscription.objects.get_or_create(user=subscriber, author=following)
     return redirect('posts:profile', username=username)
+
 
 @login_required
 def unsubscribe(request, username):
@@ -132,6 +138,7 @@ def unsubscribe(request, username):
     following = get_object_or_404(User, username=username)
     Subscription.objects.filter(user=subscriber, author=following).delete()
     return redirect('posts:profile', username=username)
+
 
 @login_required
 def subscribe_index(request):
@@ -144,8 +151,4 @@ def subscribe_index(request):
         'title': title
     }
     return render(request, 'posts/subscribe.html', context)
-
-
-
-
 

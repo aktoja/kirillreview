@@ -11,7 +11,7 @@ class Group(models.Model):
 
     def __str__(self):
         return self.title
-    
+
     class Meta:
         verbose_name = "Группа"
         verbose_name_plural = "Группы"
@@ -43,6 +43,7 @@ class Post(models.Model):
         verbose_name = 'Пост'
         verbose_name_plural = 'Посты'
 
+
 class Comment(models.Model):
     text = models.CharField(max_length=300, verbose_name="Текст")
     pub_date = models.DateTimeField(auto_now_add=True, verbose_name="Дата публикации")
@@ -51,21 +52,22 @@ class Comment(models.Model):
         on_delete=models.CASCADE,
         related_name='comments',
         verbose_name="Автор"
-        )
+    )
     post = models.ForeignKey(
         Post,
         on_delete=models.CASCADE,
         related_name='comments',
         verbose_name="Пост"
     )
-    
+
     def __str__(self):
         return self.text[:25]
-    
+
     class Meta:
         ordering = ('-pub_date',)
         verbose_name = 'Комментарий'
         verbose_name_plural = 'Комментарии'
+
 
 class Subscription(models.Model):
     user = models.ForeignKey(
@@ -85,4 +87,3 @@ class Subscription(models.Model):
         constraints = (models.UniqueConstraint(fields=['user', 'author'], name='unique_subscribe'),)
         verbose_name = 'Подписка'
         verbose_name_plural = 'Подписки'
-        
